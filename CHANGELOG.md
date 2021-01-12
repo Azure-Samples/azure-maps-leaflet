@@ -30,4 +30,3 @@ Initial release.
     - **Weather**
         - Infrared (`microsoft.weather.infrared.main`) - Latest Infrared Satellite images shows clouds by their temperature. 
         - Radar (`microsoft.weather.radar.main`) - Latest weather radar images including areas of rain, snow, ice and mixed conditions. 
-
