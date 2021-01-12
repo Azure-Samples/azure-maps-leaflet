@@ -3,6 +3,7 @@ import AuthenticationContext from 'adal-angular';
 import { RequestParameters } from './RequestParameters';
 import { AuthenticationType } from './AuthenticationType';
 import { Constants } from './Constants';
+import { Helpers } from './Helpers';
 
 /**
  * A manager for the map control's authentication.
@@ -11,12 +12,12 @@ import { Constants } from './Constants';
  */
 export class AuthenticationManager {
     private readonly options: AuthenticationOptions;
-    private readonly sessionId: string;
     private tokenTimeOutHandle: NodeJS.Timer; // Anon auth token refresh timeout
     private initPromise: Promise<void>;
     private _initialized = false;
 
     private static instance: AuthenticationManager;
+    public static readonly sessionId = Helpers.uuid();
 
     public static getInstance(authOptions: AuthenticationOptions): AuthenticationManager {
         const domain = authOptions.azMapsDomain;
@@ -396,7 +397,7 @@ export class AuthenticationManager {
 
         // Add the headers used for identifying a request is from the map control.
         request.headers = request.headers || {};
-        request.headers[h.SESSION_ID] = self.sessionId;
+        request.headers[h.SESSION_ID] = AuthenticationManager.sessionId;
         request.headers[h.MS_AM_REQUEST_ORIGIN] = h.MS_AM_REQUEST_ORIGIN_VALUE;
         request.headers[h.MAP_AGENT] = `MapControl/Leaflet/${Constants.SDK_VERSION} (Web)`;
 

@@ -2050,8 +2050,21 @@ MIT License
         SESSION_ID: "Session-Id",
         SHORT_DOMAIN: 'atlas.microsoft.com',
         DEFAULT_DOMAIN: 'https://atlas.microsoft.com/',
-        SDK_VERSION: '1.0'
+        SDK_VERSION: '0.0.1'
     };
+
+    var Helpers = /** @class */ (function () {
+        function Helpers() {
+        }
+        /** Generates a unique GUID. */
+        Helpers.uuid = function () {
+            //@ts-ignore
+            return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, function (c) {
+                return (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16);
+            });
+        };
+        return Helpers;
+    }());
 
     /**
      * A manager for the map control's authentication.
@@ -2417,7 +2430,7 @@ MIT License
             request.url = request.url.replace('{azMapsDomain}', opt.azMapsDomain);
             // Add the headers used for identifying a request is from the map control.
             request.headers = request.headers || {};
-            request.headers[h.SESSION_ID] = self.sessionId;
+            request.headers[h.SESSION_ID] = AuthenticationManager.sessionId;
             request.headers[h.MS_AM_REQUEST_ORIGIN] = h.MS_AM_REQUEST_ORIGIN_VALUE;
             request.headers[h.MAP_AGENT] = "MapControl/Leaflet/" + Constants.SDK_VERSION + " (Web)";
             var token = self.getToken();
@@ -2454,6 +2467,7 @@ MIT License
                 headers: new Headers(request.headers)
             });
         };
+        AuthenticationManager.sessionId = Helpers.uuid();
         return AuthenticationManager;
     }());
 
