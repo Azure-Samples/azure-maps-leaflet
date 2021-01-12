@@ -2091,7 +2091,7 @@ MIT License
                             var timeout = self._getTokenExpiry(token) - Constants.tokenRefreshClockSkew;
                             self._storeAccessToken(token);
                             clearTimeout(self.tokenTimeOutHandle); // Clear the previous refresh timeout in case it hadn't triggered yet.
-                            self.tokenTimeOutHandle = setTimeout(self._triggerTokenFetch, timeout * 1000);
+                            self.tokenTimeOutHandle = setTimeout(self._triggerTokenFetch, timeout);
                             resolve();
                         }
                         catch (_a) {
@@ -2312,7 +2312,7 @@ MIT License
             }
         };
         /**
-         * Given a token, calculate the time left for token expiry
+         * Given a token, calculate the time left for token expiry in ms.
          * @param token
          * @internal
          */
