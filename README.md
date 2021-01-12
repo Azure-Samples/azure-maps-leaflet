@@ -178,7 +178,7 @@ A tile layer that connects to the Azure Maps Render V2 service.
 | `getView()` | `string` | Gets the geopolitical view setting of the layer. |
 | `setLanguage(language: string)` | | Sets the language code to append to the request. |
 | `setTilesetId(tilesetId: string)` | | Sets the tileset ID of the layer. |
-| `setTimeStamp(timeStamp: string | Date)` | | Sets the time stamp option of the request. |
+| `setTimeStamp(timeStamp: string \| Date)` | | Sets the time stamp option of the request. |
 
 ### AuthenticationOptions interface
 
