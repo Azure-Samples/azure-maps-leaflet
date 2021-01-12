@@ -1,6 +1,6 @@
 ---
 page_type: sample
-description: A leafletjs plugin that makes it easy to overlay tile layers from the Azure Maps Render V2 service.
+description: A leafletjs plugin that makes it easy to overlay tile layers from the Azure Maps tile services.
 languages:
 - javascript
 - typescript
@@ -11,7 +11,7 @@ products:
 
 # Azure Maps Leaflet plugin
 
-A [leafletjs](https://leafletjs.com/) plugin that makes it easy to overlay tile layers from the [Azure Maps Render V2 service](https://docs.microsoft.com/rest/api/maps/renderv2/getmaptilepreview).
+A [leafletjs](https://leafletjs.com/) plugin that makes it easy to overlay tile layers from the [Azure Maps tile services](https://docs.microsoft.com/rest/api/maps/renderv2/getmaptilepreview).
 
 **Features:**
 

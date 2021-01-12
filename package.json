@@ -1,7 +1,7 @@
 {
   "name": "azure-maps-leaflet",
   "version": "0.0.1",
-  "description": "An Azure Maps Web SDK module that provides a control that displays an overview map of the area the main map is focused on.",
+  "description": "A leafletjs plugin that makes it easy to overlay tile layers from the Azure Maps tile services.",
   "keywords": [
     "azure",
     "maps",
