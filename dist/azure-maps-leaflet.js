@@ -2050,7 +2050,8 @@ MIT License
         SESSION_ID: "Session-Id",
         SHORT_DOMAIN: 'atlas.microsoft.com',
         DEFAULT_DOMAIN: 'https://atlas.microsoft.com/',
-        SDK_VERSION: '0.0.1'
+        SDK_VERSION: '0.0.1',
+        TARGET_SDK: 'Leaflet'
     };
 
     var Helpers = /** @class */ (function () {
@@ -2105,16 +2106,27 @@ MIT License
             this.options = authOptions;
         }
         AuthenticationManager.getInstance = function (authOptions) {
-            var domain = authOptions.azMapsDomain;
-            //Remove any domain that might be in the domain.
-            if (domain && /^\w+:\/\//.test(domain)) {
-                // If the provided url includes a protocol don't change it.
-                authOptions.azMapsDomain = domain.replace(/^\w+:\/\//, '');
+            if (authOptions && authOptions.authType) {
+                var domain = authOptions.azMapsDomain;
+                //Remove any domain that might be in the domain.
+                if (domain && /^\w+:\/\//.test(domain)) {
+                    // If the provided url includes a protocol don't change it.
+                    authOptions.azMapsDomain = domain.replace(/^\w+:\/\//, '');
+                }
+                if (AuthenticationManager.instance && AuthenticationManager.instance.compareOptions(authOptions)) {
+                    return AuthenticationManager.instance;
+                }
+                var au = new AuthenticationManager(authOptions);
+                //Cache the instance for faster processing of additional layers and allow reuse of the same instance.
+                if (!AuthenticationManager.instance) {
+                    AuthenticationManager.instance = au;
+                }
+                return au;
             }
-            if (AuthenticationManager.instance && AuthenticationManager.instance.compareOptions(authOptions)) {
+            if (AuthenticationManager.instance) {
                 return AuthenticationManager.instance;
             }
-            return new AuthenticationManager(authOptions);
+            throw 'Azure Maps credentials not specified.';
         };
         AuthenticationManager.prototype.compareOptions = function (authOptions) {
             var opt = this.options;
@@ -2432,7 +2444,7 @@ MIT License
             request.headers = request.headers || {};
             request.headers[h.SESSION_ID] = AuthenticationManager.sessionId;
             request.headers[h.MS_AM_REQUEST_ORIGIN] = h.MS_AM_REQUEST_ORIGIN_VALUE;
-            request.headers[h.MAP_AGENT] = "MapControl/Leaflet/" + Constants.SDK_VERSION + " (Web)";
+            request.headers[h.MAP_AGENT] = "MapControl/" + h.TARGET_SDK + "/" + Constants.SDK_VERSION + " (Web)";
             var token = self.getToken();
             switch (opt.authType) {
                 case AuthenticationType.aad:
@@ -2490,15 +2502,13 @@ MIT License
             var _this = _super.call(this, _renderV2TileUrl, Object.assign({
                 tileSize: 256,
                 language: 'en-US',
-                view: 'Auto'
+                view: 'Auto',
+                tilesetId: 'microsoft.base.road'
             }, options)) || this;
             _this._baseUrl = _renderV2TileUrl;
             var self = _this;
             var opt = self.options;
-            var au = opt.authOptions;
-            if (!au) {
-                throw 'Azure Maps credentials not specified.';
-            }
+            var au = opt.authOptions || {};
             if (!au.azMapsDomain) {
                 au.azMapsDomain = Constants.SHORT_DOMAIN;
             }
@@ -2506,14 +2516,11 @@ MIT License
             self._authManager = am;
             if (!am.isInitialized()) {
                 am.initialize().then(function () {
-                    self.setTilesetId(opt.tilesetId || 'microsoft.base.road');
+                    self.setTilesetId(opt.tilesetId);
                 });
             }
             else {
-                /* self._source = new AzureMapsTileSource(MapsURL.newPipeline(authOptions, {
-                        retryOptions: { maxTries: 4 }, // Retry options
-                    }), (<AzureMapsTileLayerOptions>self.options).azMapsDomain);*/
-                self.setTilesetId(opt.tilesetId || 'microsoft.base.road');
+                self.setTilesetId(opt.tilesetId);
             }
             return _this;
         }
@@ -2553,7 +2560,6 @@ MIT License
          */
         AzureMaps.prototype.getTileUrl = function (coords) {
             var self = this;
-            var opt = self.options;
             return self._getFormattedUrl()
                 .replace('{x}', coords.x.toString())
                 .replace('{y}', coords.y.toString())
@@ -2634,6 +2640,19 @@ MIT License
             this.options.timeStamp = timeStamp;
             this._refresh();
         };
+        /**
+         * Gets the traffic flow thickness setting.
+         */
+        AzureMaps.prototype.getTrafficFlowThickness = function () {
+            return this.options.trafficFlowThickness;
+        };
+        /**
+         * sets the traffic flow thickness setting.
+         */
+        AzureMaps.prototype.setTrafficFlowThickness = function (thickness) {
+            this.options.trafficFlowThickness = thickness;
+            this._refresh();
+        };
         /************************
          * Private functions
          ***********************/
@@ -2650,6 +2669,9 @@ MIT License
                 .replace('{tilesetId}', opt.tilesetId);
             if (opt.tilesetId.startsWith('microsoft.traffic')) {
                 url = url.replace('{style}', self._getTrafficStyle());
+                if (opt.tilesetId.indexOf('flow') > 0) {
+                    url += '&thickness=' + opt.trafficFlowThickness;
+                }
             }
             if (opt.timeStamp) {
                 var ts = opt.timeStamp;
@@ -2664,26 +2686,12 @@ MIT License
         };
         AzureMaps.prototype._getTileSize = function () {
             var ts = this.options.tileSize;
-            return (typeof ts === 'number') ? ts : ts.x;
+            return ((typeof ts === 'number') ? ts : ts.x) + '';
         };
         AzureMaps.prototype._getTrafficStyle = function () {
-            switch (this.options.tilesetId) {
-                case 'microsoft.traffic.incident.night':
-                    return 'night';
-                case 'microsoft.traffic.incident.s1':
-                    return 's1';
-                case 'microsoft.traffic.incident.s2':
-                    return 's2';
-                case 'microsoft.traffic.incident.s3':
-                    return 's3';
-                case 'microsoft.traffic.flow.absolute':
-                    return 'absolute';
-                case 'microsoft.traffic.flow.reduced-sensitivity':
-                    return 'reduced-sensitivity';
-                case 'microsoft.traffic.flow.relative':
-                    return 'relative';
-                case 'microsoft.traffic.flow.relative-delay':
-                    return 'relative-delay';
+            var ts = this.options.tilesetId;
+            if (ts.indexOf('microsoft.traffic.') > -1) {
+                return ts.replace('microsoft.traffic.incident.', '').replace('microsoft.traffic.flow.', '');
             }
             return null;
         };

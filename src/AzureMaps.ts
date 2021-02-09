@@ -31,18 +31,15 @@ export class AzureMaps extends L.TileLayer {
         super(_renderV2TileUrl, Object.assign({
             tileSize: 256,
             language: 'en-US',
-            view: 'Auto'
+            view: 'Auto',
+            tilesetId: 'microsoft.base.road'
         }, options));
 
         const self = this;
         const opt = <AzureMapsTileLayerOptions>self.options;
-        const au = opt.authOptions;
+        const au = opt.authOptions || {};
 
-        if (!au) {
-            throw 'Azure Maps credentials not specified.';
-        }
-
-        if(!au.azMapsDomain){
+        if (!au.azMapsDomain) {
             au.azMapsDomain = Constants.SHORT_DOMAIN;
         }
 
@@ -51,13 +48,10 @@ export class AzureMaps extends L.TileLayer {
 
         if (!am.isInitialized()) {
             am.initialize().then(() => {
-                self.setTilesetId(opt.tilesetId || 'microsoft.base.road');
+                self.setTilesetId(opt.tilesetId);
             });
         } else {
-            /* self._source = new AzureMapsTileSource(MapsURL.newPipeline(authOptions, {
-                    retryOptions: { maxTries: 4 }, // Retry options
-                }), (<AzureMapsTileLayerOptions>self.options).azMapsDomain);*/
-            self.setTilesetId(opt.tilesetId || 'microsoft.base.road');
+            self.setTilesetId(opt.tilesetId);
         }
     }
 
@@ -99,7 +93,6 @@ export class AzureMaps extends L.TileLayer {
      */
     public getTileUrl(coords: L.Coords): string {
         const self = this;
-        const opt = <AzureMapsTileLayerOptions>self.options;
         return self._getFormattedUrl()
             .replace('{x}', coords.x.toString())
             .replace('{y}', coords.y.toString())
@@ -193,6 +186,21 @@ export class AzureMaps extends L.TileLayer {
         (<AzureMapsTileLayerOptions>this.options).timeStamp = timeStamp;
         this._refresh();
     }
+    
+    /**
+     * Gets the traffic flow thickness setting.
+     */
+    public getTrafficFlowThickness(): number {
+        return (<AzureMapsTileLayerOptions>this.options).trafficFlowThickness;
+    }
+    
+    /**
+     * sets the traffic flow thickness setting.
+     */
+    public setTrafficFlowThickness(thickness: number): void {
+        (<AzureMapsTileLayerOptions>this.options).trafficFlowThickness = thickness;
+        this._refresh();
+    }
 
     /************************
      * Private functions
@@ -214,6 +222,10 @@ export class AzureMaps extends L.TileLayer {
 
         if(opt.tilesetId.startsWith('microsoft.traffic')){
             url = url.replace('{style}', self._getTrafficStyle());
+
+            if(opt.tilesetId.indexOf('flow') > 0) {
+                url +=  '&thickness=' + opt.trafficFlowThickness;
+            }
         }
 
         if (opt.timeStamp) {
@@ -231,29 +243,16 @@ export class AzureMaps extends L.TileLayer {
         return url;
     }
 
-    private _getTileSize(): number {
+    private _getTileSize(): string {
         const ts = this.options.tileSize;
-        return (typeof ts === 'number') ? ts : ts.x;
+        return ((typeof ts === 'number') ? ts : ts.x) + '';
     }
 
     private _getTrafficStyle(): string {
-        switch((<AzureMapsTileLayerOptions>this.options).tilesetId){
-            case 'microsoft.traffic.incident.night':
-                return 'night';
-            case 'microsoft.traffic.incident.s1':
-                return 's1';
-            case 'microsoft.traffic.incident.s2':
-                return 's2';
-            case 'microsoft.traffic.incident.s3':
-                return 's3';
-            case 'microsoft.traffic.flow.absolute':
-                return 'absolute';
-            case 'microsoft.traffic.flow.reduced-sensitivity':
-                return 'reduced-sensitivity';
-            case 'microsoft.traffic.flow.relative':
-                return 'relative';
-            case 'microsoft.traffic.flow.relative-delay':
-                return 'relative-delay';
+        const ts = (<AzureMapsTileLayerOptions>this.options).tilesetId;
+
+        if(ts.indexOf('microsoft.traffic.')> -1){
+            return ts.replace('microsoft.traffic.incident.', '').replace('microsoft.traffic.flow.', '');
         }
 
         return null;

@@ -20,18 +20,33 @@ export class AuthenticationManager {
     public static readonly sessionId = Helpers.uuid();
 
     public static getInstance(authOptions: AuthenticationOptions): AuthenticationManager {
-        const domain = authOptions.azMapsDomain;
-        //Remove any domain that might be in the domain.
-        if (domain && /^\w+:\/\//.test(domain)) {
-            // If the provided url includes a protocol don't change it.
-            authOptions.azMapsDomain = domain.replace(/^\w+:\/\//, '');
+        if (authOptions && authOptions.authType) {
+            const domain = authOptions.azMapsDomain;
+            //Remove any domain that might be in the domain.
+            if (domain && /^\w+:\/\//.test(domain)) {
+                // If the provided url includes a protocol don't change it.
+                authOptions.azMapsDomain = domain.replace(/^\w+:\/\//, '');
+            }
+
+            if (AuthenticationManager.instance && AuthenticationManager.instance.compareOptions(authOptions)) {
+                return AuthenticationManager.instance;
+            }
+
+            const au = new AuthenticationManager(authOptions);
+
+            //Cache the instance for faster processing of additional layers and allow reuse of the same instance.
+            if (!AuthenticationManager.instance){
+                AuthenticationManager.instance = au;
+            }
+
+            return au;
         }
 
-        if(AuthenticationManager.instance && AuthenticationManager.instance.compareOptions(authOptions)){
+        if (AuthenticationManager.instance) {
             return AuthenticationManager.instance;
         }
 
-        return new AuthenticationManager(authOptions);
+        throw 'Azure Maps credentials not specified.';
     }
 
     public compareOptions(authOptions: AuthenticationOptions): boolean {
@@ -399,7 +414,7 @@ export class AuthenticationManager {
         request.headers = request.headers || {};
         request.headers[h.SESSION_ID] = AuthenticationManager.sessionId;
         request.headers[h.MS_AM_REQUEST_ORIGIN] = h.MS_AM_REQUEST_ORIGIN_VALUE;
-        request.headers[h.MAP_AGENT] = `MapControl/Leaflet/${Constants.SDK_VERSION} (Web)`;
+        request.headers[h.MAP_AGENT] = `MapControl/${h.TARGET_SDK}/${Constants.SDK_VERSION} (Web)`;
 
         const token = self.getToken();
         switch (opt.authType) {

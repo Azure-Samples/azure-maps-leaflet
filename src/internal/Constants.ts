@@ -22,5 +22,6 @@ export const Constants = {
     SESSION_ID: "Session-Id",
     SHORT_DOMAIN: 'atlas.microsoft.com',
     DEFAULT_DOMAIN: 'https://atlas.microsoft.com/',
-    SDK_VERSION: '0.0.1'
+    SDK_VERSION: '0.0.1',
+    TARGET_SDK: 'Leaflet'
 };

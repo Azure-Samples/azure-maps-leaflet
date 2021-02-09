@@ -85,6 +85,9 @@ declare namespace L {
 
         /** The desired date and time of the requested tile. This parameter must be specified in the standard date-time format (e.g. 2019-11-14T16:03:00-08:00), as defined by ISO 8601. This parameter is only supported when tilesetId parameter is set to `microsoft.weather.infrared.main` or `microsoft.weather.radar.main`. */
         timeStamp?: string | Date;
+
+        /** The thickness of lines when using the traffic flow tilesets. Default: 5 */
+        trafficFlowThickness?: number;
     }
 
     export module Tilelayer {
@@ -157,8 +160,18 @@ declare namespace L {
              * @param timeStamp Time stamp value.
              */
             public setTimeStamp(timeStamp: string | Date): void;
+
+            /**
+             * Gets the traffic flow thickness setting.
+             */
+            public getTrafficFlowThickness(): number;
+
+            /**
+             * sets the traffic flow thickness setting.
+             */
+            public setTrafficFlowThickness(thickness: number): void;
         }
-    }    
+    }
 
     export module tilelayer {
         /**

@@ -36,8 +36,10 @@ A [leafletjs](https://leafletjs.com/) plugin that makes it easy to overlay tile 
         - s2 (`microsoft.traffic.incident.s2`)
         - s3 (`microsoft.traffic.incident.s3`)
     - **Weather**
-        - Infrared (`microsoft.weather.infrared.main`) - Latest Infrared Satellite images shows clouds by their temperature. 
-        - Radar (`microsoft.weather.radar.main`) - Latest weather radar images including areas of rain, snow, ice and mixed conditions. 
+        - Infrared (`microsoft.weather.infrared.main`) - Latest Infrared Satellite images shows clouds by their temperature.
+        - Radar (`microsoft.weather.radar.main`) - Latest weather radar images including areas of rain, snow, ice and mixed conditions.
+- Use time stamps with weather layers to get recent and forecast data.
+- Adjust the line thickness in traffic flow layers.
 
 Currently supports raster (i.e PNG) tiles, support for vector tiles is planned.
 
@@ -174,11 +176,13 @@ A tile layer that connects to the Azure Maps Render V2 service.
 | `getLanguage()` | `string` |Gets the language code used by the layer. |
 | `getTilesetId()` | `string` | Gets the tileset ID of the layer. |
 | `getTileUrl(coords: leaflet.Coords)` | `string` | Gets the tile URL for the specified map tile coordinates. |
-| `getTimeStamp()` | `string` | Gets the time stamp value setting. |
+| `getTimeStamp()` | `string` \| `Date` | Gets the time stamp value setting. |
+| `getTrafficFlowThickness()` | `number` | Gets the traffic flow thickness setting. |
 | `getView()` | `string` | Gets the geopolitical view setting of the layer. |
 | `setLanguage(language: string)` | | Sets the language code to append to the request. |
 | `setTilesetId(tilesetId: string)` | | Sets the tileset ID of the layer. |
 | `setTimeStamp(timeStamp: string \| Date)` | | Sets the time stamp option of the request. |
+| `setTrafficFlowThickness(thickness: number)` | | Sets the traffic flow thickness setting. |
 
 ### AuthenticationOptions interface
 
@@ -209,14 +213,15 @@ Options for an Azure Maps tile layer.
 | Name | Type | Description |
 |------|------|-------------|
 | `authOptions` | `AuthenticationOptions` | **Required.** Authentication options for connecting to Azure Maps. |
-| `language` | `string` | Language code. [Supported languages](https://docs.microsoft.com/azure/azure-maps/supported-languages) |
-| `tilesetId` | `string` | The tile set ID layer to load from the Azure Maps Render V2 service. Supported values:<br/><br/>`'microsoft.base.road',`<br/> `'microsoft.base.darkgrey'`<br/> `'microsoft.imagery'`<br/> `'microsoft.weather.infrared.main'`<br/> `'microsoft.weather.radar.main'`<br/> `'microsoft.base.hybrid.road'`<br/> `'microsoft.base.labels.road'`<br/> `'microsoft.traffic.incident.night'`<br/> `'microsoft.traffic.incident.s1'`<br/> `'microsoft.traffic.incident.s2'`<br/> `'microsoft.traffic.incident.s3'`<br/> `'microsoft.traffic.flow.absolute'`<br/> `'microsoft.traffic.flow.reduced-sensitivity'`<br/> `'microsoft.traffic.flow.relative'`<br/> `'microsoft.traffic.flow.relative-delay'` |
+| `language` | `string` | Language code. [Supported languages](https://docs.microsoft.com/azure/azure-maps/supported-languages) Default: `'en-US'` |
+| `tilesetId` | `string` | The tile set ID layer to load from the Azure Maps Render V2 service. Supported values:<br/><br/>`'microsoft.base.road',`<br/> `'microsoft.base.darkgrey'`<br/> `'microsoft.imagery'`<br/> `'microsoft.weather.infrared.main'`<br/> `'microsoft.weather.radar.main'`<br/> `'microsoft.base.hybrid.road'`<br/> `'microsoft.base.labels.road'`<br/> `'microsoft.traffic.incident.night'`<br/> `'microsoft.traffic.incident.s1'`<br/> `'microsoft.traffic.incident.s2'`<br/> `'microsoft.traffic.incident.s3'`<br/> `'microsoft.traffic.flow.absolute'`<br/> `'microsoft.traffic.flow.reduced-sensitivity'`<br/> `'microsoft.traffic.flow.relative'`<br/> `'microsoft.traffic.flow.relative-delay'` Custom tileset ID's that return raster tiles that are 256x256 pixels in size can also be specified as a string. Default `'microsoft.base.road'` |
 | `timeStamp` | `string` \| `Date` | The desired date and time of the requested tile. This parameter must be specified in the standard date-time format (e.g. 2019-11-14T16:03:00-08:00), as defined by ISO 8601. This parameter is only supported when tilesetId parameter is set to `microsoft.weather.infrared.main` or `microsoft.weather.radar.main`. |
-| `view` | `string` | Geopolitical view of the map. [Supported views](https://docs.microsoft.com/en-us/azure/azure-maps/supported-languages#sdks) |
+| `trafficFlowThickness` | `number` | The thickness of lines when using the traffic flow tilesets. Default: `5` |
+| `view` | `string` | Geopolitical view of the map. [Supported views](https://docs.microsoft.com/en-us/azure/azure-maps/supported-languages#sdks) Default: `'Auto'` |
 
 ### Alternative Option for Leaflet
 
-This Leaflet plugin makes it easy to overlay tile layers from Azure Maps using any of the supported authenitication methods available in Azure Maps; subscription key or Azure Active Directory (recommended). If you are only using a subscription key and don't plan to use Azure Active Directory, the following code can be used instead to easily overlay Azure Maps tile layers on a leaflet map without having to use this plugin.
+This Leaflet plugin makes it easy to overlay tile layers from Azure Maps using any of the supported authentication methods available in Azure Maps; subscription key or Azure Active Directory (recommended). If you are only using a subscription key and don't plan to use Azure Active Directory, the following code can be used instead to easily overlay Azure Maps tile layers on a leaflet map without having to use this plugin.
 
 ```html
 <!DOCTYPE html>

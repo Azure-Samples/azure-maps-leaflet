@@ -55,8 +55,12 @@
         }
 
         function languageUpdated(elm){
-            var lang = elm.options[elm.selectedIndex].value
+            var lang = elm.options[elm.selectedIndex].value;
             layer.setLanguage(lang);
+        }       
+
+        function trafficFlowThicknessUpdated(elm){
+            layer.setTrafficFlowThickness(elm.value);
         }
     </script> 
 </head>
@@ -150,6 +154,15 @@
                     </select>
                 </td>
             </tr>
+            <tr>
+                <td>Traffic flow thickness:</td>
+                <td>
+                    <form oninput="ft.value=flowThickness.value">
+                        <input type="range" id="flowThickness" value="5" min="1" max="20" step="1" onchange="trafficFlowThicknessUpdated(this)" />
+                        <output name="ft" for="flowThickness">5</output>
+                    </form>
+                </td>
+            </tr>  
         </table>
         <br/><br/>
         Options not demonstrated:
