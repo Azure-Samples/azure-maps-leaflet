@@ -17,6 +17,6 @@ export interface AzureMapsTileLayerOptions extends L.TileLayerOptions {
     /** The desired date and time of the requested tile. This parameter must be specified in the standard date-time format (e.g. 2019-11-14T16:03:00-08:00), as defined by ISO 8601. This parameter is only supported when tilesetId parameter is set to `microsoft.weather.infrared.main` or `microsoft.weather.radar.main`. */
     timeStamp?: string | Date;   
 
-    /** The thickness of lines when using the traffic flow tilesets. Default: 5 */
+    /** The thickness of lines when using the traffic flow tilesets. Default: `5` */
     trafficFlowThickness?: number;
 }

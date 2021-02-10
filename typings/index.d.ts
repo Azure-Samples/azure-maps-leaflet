@@ -132,6 +132,9 @@ declare namespace L {
             /** Gets the geopolitical view setting of the layer. */
             public getView(): string;
 
+            /** Sets the geopolitical view setting of the layer. */
+            public setView(view: string): void;
+
             /** Gets the language code used by the layer. */
             public getLanguage(): string;
 

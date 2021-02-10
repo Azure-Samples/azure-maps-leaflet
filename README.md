@@ -111,7 +111,7 @@ Download the project and copy the `azure-maps-leaflet` JavaScript file from the 
                 //Alternatively, create an instance of the Azure Maps Tile Layer and add it to the map. 
                var layer = new L.TileLayer.AzureMaps({ 
                     authOptions: authOptions,
-                    tilesetId: 'fr-FR',
+                    tilesetId: 'microsoft.base.road',
                     language: 'fr-FR'
                 });
                 map.addLayer(layer);
@@ -183,6 +183,7 @@ A tile layer that connects to the Azure Maps Render V2 service.
 | `setTilesetId(tilesetId: string)` | | Sets the tileset ID of the layer. |
 | `setTimeStamp(timeStamp: string \| Date)` | | Sets the time stamp option of the request. |
 | `setTrafficFlowThickness(thickness: number)` | | Sets the traffic flow thickness setting. |
+| `setView(view: string)` | | Sets the geopolitical view setting of the layer. |
 
 ### AuthenticationOptions interface
 

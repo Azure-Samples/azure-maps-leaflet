@@ -2503,7 +2503,8 @@ MIT License
                 tileSize: 256,
                 language: 'en-US',
                 view: 'Auto',
-                tilesetId: 'microsoft.base.road'
+                tilesetId: 'microsoft.base.road',
+                trafficFlowThickness: 5
             }, options)) || this;
             _this._baseUrl = _renderV2TileUrl;
             var self = _this;
@@ -2593,6 +2594,10 @@ MIT License
         AzureMaps.prototype.getView = function () {
             return this.options.view;
         };
+        /** Sets the geopolitical view setting of the layer. */
+        AzureMaps.prototype.setView = function (view) {
+            this.options.view = view;
+        };
         /** Gets the language code used by the layer. */
         AzureMaps.prototype.getLanguage = function () {
             return this.options.language;
@@ -2618,11 +2623,13 @@ MIT License
             var self = this;
             self.options.tilesetId = tilesetId;
             self._baseUrl = _renderV2TileUrl;
-            if (tilesetId.startsWith('microsoft.traffic.flow')) {
-                self._baseUrl = _trafficFlowTileUrl;
-            }
-            else if (tilesetId.startsWith('microsoft.traffic.incident')) {
-                self._baseUrl = _trafficIncidentTileUrl;
+            if (tilesetId) {
+                if (tilesetId.startsWith('microsoft.traffic.flow')) {
+                    self._baseUrl = _trafficFlowTileUrl;
+                }
+                else if (tilesetId.startsWith('microsoft.traffic.incident')) {
+                    self._baseUrl = _trafficIncidentTileUrl;
+                }
             }
             self._refresh();
         };
@@ -2667,7 +2674,7 @@ MIT License
                 .replace('{language}', opt.language)
                 .replace('{view}', opt.view)
                 .replace('{tilesetId}', opt.tilesetId);
-            if (opt.tilesetId.startsWith('microsoft.traffic')) {
+            if (opt.tilesetId && opt.tilesetId.startsWith('microsoft.traffic')) {
                 url = url.replace('{style}', self._getTrafficStyle());
                 if (opt.tilesetId.indexOf('flow') > 0) {
                     url += '&thickness=' + opt.trafficFlowThickness;
@@ -2690,7 +2697,7 @@ MIT License
         };
         AzureMaps.prototype._getTrafficStyle = function () {
             var ts = this.options.tilesetId;
-            if (ts.indexOf('microsoft.traffic.') > -1) {
+            if (ts && ts.indexOf('microsoft.traffic.') > -1) {
                 return ts.replace('microsoft.traffic.incident.', '').replace('microsoft.traffic.flow.', '');
             }
             return null;
