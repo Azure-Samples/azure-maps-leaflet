@@ -259,7 +259,7 @@ export class AuthenticationManager {
                     // trigger a new token fetch, but still return the current token
                     self._triggerTokenFetch();
                 } else if (expiresIn <= 0) {
-                    // token renew failed and dont have a token.
+                    // token renew failed and don't have a token.
                     self._saveItem(Constants.storage.accessTokenKey, "");
                     throw new Error(Constants.errors.tokenExpired);
                 }
@@ -366,11 +366,12 @@ export class AuthenticationManager {
     private _supportsLocalStorage(): boolean {
         try {
             const wls = window.localStorage;
+            const testStorageKey = Constants.storage.testStorageKey;
             if (!wls) { return false; } // Test availability
-            wls.setItem(Constants.storage.testStorageKey, "A"); // Try write
-            if (wls.getItem(Constants.storage.testStorageKey) !== "A") { return false; } // Test read/write
-            wls.removeItem(Constants.storage.testStorageKey); // Try delete
-            if (wls.getItem(Constants.storage.testStorageKey)) { return false; } // Test delete
+            wls.setItem(testStorageKey, "A"); // Try write
+            if (wls.getItem(testStorageKey) !== "A") { return false; } // Test read/write
+            wls.removeItem(testStorageKey); // Try delete
+            if (wls.getItem(testStorageKey)) { return false; } // Test delete
             return true; // Success
         } catch (e) {
             return false;
@@ -384,25 +385,18 @@ export class AuthenticationManager {
     private _supportsSessionStorage(): boolean {
         try {
             const wss = window.sessionStorage;
+            const testStorageKey = Constants.storage.testStorageKey;
             if (!wss) { return false; } // Test availability
-            wss.setItem(Constants.storage.testStorageKey, "A"); // Try write
-            if (wss.getItem(Constants.storage.testStorageKey) !== "A") { return false; } // Test read/write
-            wss.removeItem(Constants.storage.testStorageKey); // Try delete
-            if (wss.getItem(Constants.storage.testStorageKey)) { return false; } // Test delete
+            wss.setItem(testStorageKey, "A"); // Try write
+            if (wss.getItem(testStorageKey) !== "A") { return false; } // Test read/write
+            wss.removeItem(testStorageKey); // Try delete
+            if (wss.getItem(testStorageKey)) { return false; } // Test delete
             return true; // Success
         } catch (e) {
             return false;
         }
     }
-
-    /**
-     * Return the number of milliseconds since 1970/01/01
-     * @ignore
-     */
-    private _getCurrentTime(): number {
-        return Math.round(new Date().getTime() / 1000.0);
-    }
-
+    
     public signRequest(request: RequestParameters): RequestParameters {
         const self = this;
         const opt = self.options;
@@ -411,25 +405,27 @@ export class AuthenticationManager {
         request.url = request.url.replace('{azMapsDomain}', opt.azMapsDomain);
 
         // Add the headers used for identifying a request is from the map control.
-        request.headers = request.headers || {};
-        request.headers[h.SESSION_ID] = AuthenticationManager.sessionId;
-        request.headers[h.MS_AM_REQUEST_ORIGIN] = h.MS_AM_REQUEST_ORIGIN_VALUE;
-        request.headers[h.MAP_AGENT] = `MapControl/${h.TARGET_SDK}/${Constants.SDK_VERSION} (Web)`;
+        var headers = request.headers || {};
+        headers[h.SESSION_ID] = AuthenticationManager.sessionId;
+        headers[h.MS_AM_REQUEST_ORIGIN] = h.MS_AM_REQUEST_ORIGIN_VALUE;
+        headers[h.MAP_AGENT] = `MapControl/${h.TARGET_SDK}/${h.SDK_VERSION} (Web)`;
 
         const token = self.getToken();
         switch (opt.authType) {
             case AuthenticationType.aad:
             case AuthenticationType.anonymous:
-                request.headers[h.X_MS_CLIENT_ID] = opt.clientId;
-                request.headers[h.AUTHORIZATION] = `${h.AUTHORIZATION_SCHEME} ${token}`;
+                headers[h.X_MS_CLIENT_ID] = opt.clientId;
+                headers[h.AUTHORIZATION] = `${h.AUTHORIZATION_SCHEME} ${token}`;
                 break;
             case AuthenticationType.subscriptionKey:
-                if ("url" in request) {
+                if ("url" in request) {                   
+                    var prefix = '?';
+                    
                     if (request.url.indexOf("?") !== -1) {
-                        request.url += `&subscription-key=${token}`;
-                    } else {
-                        request.url += `?&subscription-key=${token}`;
+                        prefix = '&';
                     }
+
+                    request.url += `${prefix}subscription-key=${token}`;
                 } else {
                     throw new Error("No URL specified in request.");
                 }
@@ -437,6 +433,8 @@ export class AuthenticationManager {
             default:
                 throw new Error("An invalid authentication type was specified");
         }
+
+        request.headers = headers;
 
         return request;
     }
