@@ -2439,7 +2439,7 @@ MIT License
             var headers = request.headers || {};
             headers[h.SESSION_ID] = AuthenticationManager.sessionId;
             headers[h.MS_AM_REQUEST_ORIGIN] = h.MS_AM_REQUEST_ORIGIN_VALUE;
-            headers[h.MAP_AGENT] = "MapControl/" + h.TARGET_SDK + "/" + h.SDK_VERSION + " (Web)";
+            headers[h.MAP_AGENT] = "MapControl/" + h.SDK_VERSION + " (" + h.TARGET_SDK + ")";
             var token = self.getToken();
             switch (opt.authType) {
                 case AuthenticationType.aad:
