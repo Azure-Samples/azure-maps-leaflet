@@ -12,9 +12,11 @@ import { Helpers } from './Helpers';
  */
 export class AuthenticationManager {
     private readonly options: AuthenticationOptions;
-    private tokenTimeOutHandle: NodeJS.Timer; // Anon auth token refresh timeout
+    private tokenTimeOutHandle: number; // Anon auth token refresh timeout
     private initPromise: Promise<void>;
     private _initialized = false;
+    
+    private static fallbackStorage: Record<string, string> = {};
 
     private static instance: AuthenticationManager;
     public static readonly sessionId = Helpers.uuid();
@@ -285,6 +287,7 @@ export class AuthenticationManager {
 
                     self._storeAccessToken(token);
                     clearTimeout(self.tokenTimeOutHandle); // Clear the previous refresh timeout in case it hadn't triggered yet.
+                    //@ts-ignore
                     self.tokenTimeOutHandle = setTimeout(self._triggerTokenFetch, timeout);
 
                     resolve();
@@ -340,6 +343,9 @@ export class AuthenticationManager {
         } else if (this._supportsSessionStorage()) {
             sessionStorage.setItem(key, value);
             return true;
+        } else {
+            AuthenticationManager.fallbackStorage[key] = value;
+            return true;
         }
 
         return false;
@@ -354,7 +360,10 @@ export class AuthenticationManager {
             return localStorage.getItem(key);
         } else if (this._supportsSessionStorage()) {
             return sessionStorage.getItem(key);
+        } else {
+            return AuthenticationManager.fallbackStorage[key];
         }
+
 
         return null;
     }

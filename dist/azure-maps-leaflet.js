@@ -2092,6 +2092,7 @@ MIT License
                             var timeout = self._getTokenExpiry(token) - Constants.tokenRefreshClockSkew;
                             self._storeAccessToken(token);
                             clearTimeout(self.tokenTimeOutHandle); // Clear the previous refresh timeout in case it hadn't triggered yet.
+                            //@ts-ignore
                             self.tokenTimeOutHandle = setTimeout(self._triggerTokenFetch, timeout);
                             resolve();
                         }
@@ -2365,7 +2366,10 @@ MIT License
                 sessionStorage.setItem(key, value);
                 return true;
             }
-            return false;
+            else {
+                AuthenticationManager.fallbackStorage[key] = value;
+                return true;
+            }
         };
         /**
          * Gets an item saved in storage
@@ -2378,7 +2382,9 @@ MIT License
             else if (this._supportsSessionStorage()) {
                 return sessionStorage.getItem(key);
             }
-            return null;
+            else {
+                return AuthenticationManager.fallbackStorage[key];
+            }
         };
         /**
          * Returns true if browser supports localStorage, false otherwise.
@@ -2474,6 +2480,7 @@ MIT License
                 headers: new Headers(request.headers)
             });
         };
+        AuthenticationManager.fallbackStorage = {};
         AuthenticationManager.sessionId = Helpers.uuid();
         return AuthenticationManager;
     }());
