@@ -3,7 +3,7 @@ import { AzureMapsTileLayerOptions } from './AzureMapsTileLayerOptions';
 import { AuthenticationManager } from './internal/AuthenticationManager';
 import { Constants } from './internal/Constants';
 
-const _renderV2TileUrl = 'https://{azMapsDomain}/map/tile?api-version=2.0&tilesetId={tilesetId}&zoom={z}&x={x}&y={y}&tileSize={tileSize}&language={language}&view={view}';
+const _renderV2TileUrl = `https://{azMapsDomain}/map/tile?api-version=${Constants.RENDERV2_VERSION}&tilesetId={tilesetId}&zoom={z}&x={x}&y={y}&tileSize={tileSize}&language={language}&view={view}`;
 const _trafficFlowTileUrl = 'https://{azMapsDomain}/traffic/flow/tile/png?api-version=1.0&style={style}&zoom={z}&x={x}&y={y}';
 const _trafficIncidentTileUrl = 'https://{azMapsDomain}/traffic/incident/tile/png?api-version=1.0&style={style}&zoom={z}&x={x}&y={y}';
 
@@ -75,7 +75,7 @@ export class AzureMaps extends L.TileLayer {
             } else if (ts.startsWith('microsoft.weather.')) {
                 partner = 'AccuWeather';
             } else if (ts === 'microsoft.imagery') {
-                partner = 'DigitalGlobe';
+                partner = 'Airbus';
             }
 
             if (partner) {

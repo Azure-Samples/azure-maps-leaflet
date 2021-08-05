@@ -23,5 +23,6 @@ export const Constants = {
     SHORT_DOMAIN: 'atlas.microsoft.com',
     DEFAULT_DOMAIN: 'https://atlas.microsoft.com/',
     SDK_VERSION: '0.0.1',
-    TARGET_SDK: 'Leaflet'
+    TARGET_SDK: 'Leaflet',
+    RENDERV2_VERSION: '2.1'
 };
