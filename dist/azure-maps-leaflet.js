@@ -22,7 +22,7 @@ MIT License
     SOFTWARE
 */
 
-(function (exports, L) {
+(function (L) {
     'use strict';
 
     L = L && Object.prototype.hasOwnProperty.call(L, 'default') ? L['default'] : L;
@@ -2747,22 +2747,19 @@ MIT License
     }(L.TileLayer));
 
     /* Build the structure of the SDK */
-    //Add the Azure Maps tile layer class to the L.TileLayer namespace.
-    var TileLayer = {
-        AzureMaps: AzureMaps
+    /**
+     * Static function to create a tile layer that connects to the Azure Maps Render V2 service.
+     * @param options Azure Maps Tile layer options.
+     */
+    var azMapLayer = function (options) {
+        return new AzureMaps(options);
     };
-    //Add static function for creating Azure Maps tile layer.
-    var tileLayer = {
-        /**
-         * Static function to create a tile layer that connects to the Azure Maps Render V2 service.
-         * @param options Azure Maps Tile layer options.
-         */
-        azureMaps: function (options) {
-            return new AzureMaps(options);
-        }
-    };
+    /* Extent the Leaflet tile layer functions/classes with static functions for Azure Maps. */
+    //@ts-ignore
+    L.TileLayer.azureMaps = azMapLayer;
+    //@ts-ignore
+    L.TileLayer.AzureMaps = AzureMaps;
+    //@ts-ignore
+    L.tileLayer.azureMaps = azMapLayer;
 
-    exports.TileLayer = TileLayer;
-    exports.tileLayer = tileLayer;
-
-}(this.L = this.L || {}, L));
+}(L));

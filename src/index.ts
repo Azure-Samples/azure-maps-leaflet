@@ -1,22 +1,23 @@
 /* Build the structure of the SDK */
+import L from 'leaflet';
 import { AzureMaps } from './AzureMaps';
 import { AzureMapsTileLayerOptions } from './AzureMapsTileLayerOptions';
 
-//Add the Azure Maps tile layer class to the L.TileLayer namespace.
-const TileLayer = {
-    AzureMaps: AzureMaps
+/**
+ * Static function to create a tile layer that connects to the Azure Maps Render V2 service.
+ * @param options Azure Maps Tile layer options.
+ */
+const azMapLayer = function(options: AzureMapsTileLayerOptions){
+    return new AzureMaps(options);
 };
 
-//Add static function for creating Azure Maps tile layer.
-const tileLayer = {
-    /**
-     * Static function to create a tile layer that connects to the Azure Maps Render V2 service.
-     * @param options Azure Maps Tile layer options.
-     */
-    azureMaps: function(options: AzureMapsTileLayerOptions){
-        return new AzureMaps(options);
-    }
-}
+/* Extent the Leaflet tile layer functions/classes with static functions for Azure Maps. */
 
-//Export.
-export { TileLayer, tileLayer };
+//@ts-ignore
+L.TileLayer.azureMaps = azMapLayer;
+
+//@ts-ignore
+L.TileLayer.AzureMaps = AzureMaps;
+
+//@ts-ignore
+L.tileLayer.azureMaps = azMapLayer;
