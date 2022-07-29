@@ -4,6 +4,7 @@ import { RequestParameters } from './RequestParameters';
 import { AuthenticationType } from './AuthenticationType';
 import { Constants } from './Constants';
 import { Helpers } from './Helpers';
+import { Timers } from './Timers';
 
 /**
  * A manager for the map control's authentication.
@@ -115,7 +116,7 @@ export class AuthenticationManager {
 
                     // Login and acquire a token.
                     // Fire it async so that users can add any listeners for token acquire events first.
-                    setTimeout(() => self._loginAndAcquire(resolve, reject));
+                    Timers.setTimeout(() => self._loginAndAcquire(resolve, reject), 0);
                 } else if (opt.authType === AuthenticationType.anonymous) {
                     // Anonymous authentication, just call the users provided callback.
                     self._initialized = true;
@@ -286,9 +287,9 @@ export class AuthenticationManager {
                     const timeout = self._getTokenExpiry(token) - Constants.tokenRefreshClockSkew;
 
                     self._storeAccessToken(token);
-                    clearTimeout(self.tokenTimeOutHandle); // Clear the previous refresh timeout in case it hadn't triggered yet.
+                    Timers.clearTimeout(self.tokenTimeOutHandle); // Clear the previous refresh timeout in case it hadn't triggered yet.
                     //@ts-ignore
-                    self.tokenTimeOutHandle = setTimeout(self._triggerTokenFetch, timeout);
+                    self.tokenTimeOutHandle = Timers.setTimeout(self._triggerTokenFetch, timeout);
 
                     resolve();
                 } catch {

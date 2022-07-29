@@ -1,6 +1,6 @@
 {
   "name": "azure-maps-leaflet",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A leafletjs plugin that makes it easy to overlay tile layers from the Azure Maps tile services.",
   "keywords": [
     "azure",
@@ -37,7 +37,7 @@
     "rollup": "^1.32.1",
     "rollup-plugin-commonjs": "^10.0.1",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "rollup-plugin-uglify": "^6.0.4",
+    "rollup-plugin-uglify": "^5.0.2",
     "tslint": "^5.15.0",
     "typescript": "^3.8.3",
     "yargs": "^13.3.2"

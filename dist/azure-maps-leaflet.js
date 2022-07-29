@@ -2068,6 +2068,44 @@ MIT License
         return Helpers;
     }());
 
+    var SetTimeoutWorkerCode = "onmessage = function (event) {\n    var delay = event.data.time; // milliseconds\n    var before = Date.now();\n    while (Date.now() < before + delay) { };\n    postMessage({id: event.data.id});\n};";
+    /** A class that provides a setTimeout function that will work in inactive browser tabs, or during mobile lock screens. */
+    var Timers = /** @class */ (function () {
+        function Timers() {
+        }
+        Timers.clearTimeout = function (id) {
+            var w = Timers._workerTable[id];
+            if (w) {
+                w.worker.terminate();
+                delete Timers._workerTable[id];
+            }
+        };
+        Timers.setTimeout = function (callback, timeout) {
+            var id = Math.round(Math.random() * 1000000000);
+            var blob = new Blob([SetTimeoutWorkerCode]);
+            var blobURL = window.URL.createObjectURL(blob);
+            var worker = new Worker(blobURL);
+            worker.addEventListener("message", Timers._receivedSetTimeoutMessage);
+            Timers._workerTable[id] = {
+                callback: callback,
+                worker: worker
+            };
+            //Start the worker.
+            worker.postMessage({ id: id, time: timeout });
+            return id;
+        };
+        Timers._receivedSetTimeoutMessage = function (e) {
+            var w = Timers._workerTable[e.data.id];
+            if (w) {
+                w.callback();
+                w.worker.terminate();
+                delete Timers._workerTable[e.data.id];
+            }
+        };
+        Timers._workerTable = {};
+        return Timers;
+    }());
+
     /**
      * A manager for the map control's authentication.
      * Exposed through the authentication property of the atlas.Map class.
@@ -2092,9 +2130,9 @@ MIT License
                             // Try to get the timeout first as this will guarantee the token is correctly formatted.
                             var timeout = self._getTokenExpiry(token) - Constants.tokenRefreshClockSkew;
                             self._storeAccessToken(token);
-                            clearTimeout(self.tokenTimeOutHandle); // Clear the previous refresh timeout in case it hadn't triggered yet.
+                            Timers.clearTimeout(self.tokenTimeOutHandle); // Clear the previous refresh timeout in case it hadn't triggered yet.
                             //@ts-ignore
-                            self.tokenTimeOutHandle = setTimeout(self._triggerTokenFetch, timeout);
+                            self.tokenTimeOutHandle = Timers.setTimeout(self._triggerTokenFetch, timeout);
                             resolve();
                         }
                         catch (_a) {
@@ -2176,7 +2214,7 @@ MIT License
                         }
                         // Login and acquire a token.
                         // Fire it async so that users can add any listeners for token acquire events first.
-                        setTimeout(function () { return self._loginAndAcquire(resolve, reject); });
+                        Timers.setTimeout(function () { return self._loginAndAcquire(resolve, reject); }, 0);
                     }
                     else if (opt.authType === AuthenticationType.anonymous) {
                         // Anonymous authentication, just call the users provided callback.
