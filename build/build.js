@@ -88,6 +88,7 @@ let rollupError = false;
 
     // Read license.txt to define the banner for the packages.
     let banner = "/*\n";
+    banner += `${pkg.name} Version: ${pkg.version}\n\n`;
     banner += (await fs.readFile("./license.md", "utf8")).trim();
     banner += "\n*/\n";
 
@@ -149,8 +150,8 @@ let rollupError = false;
 
     // Rollup minified version.
     console.log("Bundling minified javascript package");
-
-    const minifiedLicense = "/* MIT License - Copyright (c) Microsoft Corporation. */\n\n"
+    
+    const minifiedLicense = `/*\n${pkg.name} Version: ${pkg.version}\n\nMIT License - Copyright (c) Microsoft Corporation.\n*/\n\n`;
 
     await bundle(rollupInputOps, rollupOutputOps, minifiedLicense);
 
