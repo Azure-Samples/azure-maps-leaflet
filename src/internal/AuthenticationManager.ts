@@ -117,7 +117,7 @@ export class AuthenticationManager {
                     // Login and acquire a token.
                     // Fire it async so that users can add any listeners for token acquire events first.
                     Timers.setTimeout(() => self._loginAndAcquire(resolve, reject), 0);
-                } else if (opt.authType === AuthenticationType.anonymous) {
+                } else if (opt.authType === AuthenticationType.anonymous || opt.authType === AuthenticationType.sas) {
                     // Anonymous authentication, just call the users provided callback.
                     self._initialized = true;
                     resolve(self._triggerTokenFetch());
@@ -249,7 +249,7 @@ export class AuthenticationManager {
             }
 
             return token;
-        } else if (opt.authType === AuthenticationType.anonymous) {
+        } else if (opt.authType === AuthenticationType.anonymous || opt.authType === AuthenticationType.sas) {
             const token = self._getItem(Constants.storage.accessTokenKey);
             if (!token) {
                 // Cached Token not present, invoke the user provided callback function to fetch function
@@ -426,6 +426,10 @@ export class AuthenticationManager {
             case AuthenticationType.anonymous:
                 headers[h.X_MS_CLIENT_ID] = opt.clientId;
                 headers[h.AUTHORIZATION] = `${h.AUTHORIZATION_SCHEME} ${token}`;
+                break;
+            case AuthenticationType.sas:
+                headers[h.X_MS_CLIENT_ID] = opt.clientId;
+                headers[h.AUTHORIZATION] = `${h.AUTHORIZATION_SCHEME_SAS} ${token}`;
                 break;
             case AuthenticationType.subscriptionKey:
                 if ("url" in request) {                   

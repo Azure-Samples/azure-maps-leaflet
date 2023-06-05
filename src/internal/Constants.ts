@@ -15,6 +15,7 @@ export const Constants = {
     },
     AUTHORIZATION: "authorization",
     AUTHORIZATION_SCHEME: "Bearer",
+    AUTHORIZATION_SCHEME_SAS: "jwt-sas",
     MAP_AGENT: "Map-Agent",
     MS_AM_REQUEST_ORIGIN: "Ms-Am-Request-Origin",
     MS_AM_REQUEST_ORIGIN_VALUE: "MapControl",

@@ -22,5 +22,12 @@ export enum AuthenticationType {
      * Allows a callback responsible for acquiring an authentication token to be provided.
      * Literal value `"anonymous"`
      */
-    anonymous = "anonymous"
+    anonymous = "anonymous",
+
+    /**
+     * The anonymous authentication mechanism. Recommended for pages.
+     * Allows a callback responsible for acquiring a SAS authentication token to be provided.
+     * Literal value `"sas"`
+     */
+    sas = "sas"
 }
