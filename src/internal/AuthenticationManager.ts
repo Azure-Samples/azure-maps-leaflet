@@ -265,6 +265,14 @@ export class AuthenticationManager {
                     // token renew failed and don't have a token.
                     self._saveItem(Constants.storage.accessTokenKey, "");
                     throw new Error(Constants.errors.tokenExpired);
+                } else {
+                    //Add a timeout to renew the cached token. 
+                    // Try to get the timeout first as this will guarantee the token is correctly formatted.
+                    const timeout = expiresIn - Constants.tokenRefreshClockSkew;
+
+                    Timers.clearTimeout(self.tokenTimeOutHandle); // Clear the previous refresh timeout in case it hadn't triggered yet.
+                    //@ts-ignore
+                    self.tokenTimeOutHandle = Timers.setTimeout(self._triggerTokenFetch, timeout);
                 }
             }
 

@@ -2026,6 +2026,12 @@ MIT License
          * Literal value `"anonymous"`
          */
         AuthenticationType["anonymous"] = "anonymous";
+        /**
+         * The anonymous authentication mechanism. Recommended for pages.
+         * Allows a callback responsible for acquiring a SAS authentication token to be provided.
+         * Literal value `"sas"`
+         */
+        AuthenticationType["sas"] = "sas";
     })(AuthenticationType || (AuthenticationType = {}));
 
     var Constants = {
@@ -2045,6 +2051,7 @@ MIT License
         },
         AUTHORIZATION: "authorization",
         AUTHORIZATION_SCHEME: "Bearer",
+        AUTHORIZATION_SCHEME_SAS: "jwt-sas",
         MAP_AGENT: "Map-Agent",
         MS_AM_REQUEST_ORIGIN: "Ms-Am-Request-Origin",
         MS_AM_REQUEST_ORIGIN_VALUE: "MapControl",
@@ -2218,7 +2225,7 @@ MIT License
                         // Fire it async so that users can add any listeners for token acquire events first.
                         Timers.setTimeout(function () { return self._loginAndAcquire(resolve, reject); }, 0);
                     }
-                    else if (opt.authType === AuthenticationType.anonymous) {
+                    else if (opt.authType === AuthenticationType.anonymous || opt.authType === AuthenticationType.sas) {
                         // Anonymous authentication, just call the users provided callback.
                         self._initialized = true;
                         resolve(self._triggerTokenFetch());
@@ -2339,7 +2346,7 @@ MIT License
                 }
                 return token_1;
             }
-            else if (opt.authType === AuthenticationType.anonymous) {
+            else if (opt.authType === AuthenticationType.anonymous || opt.authType === AuthenticationType.sas) {
                 var token = self._getItem(Constants.storage.accessTokenKey);
                 if (!token) {
                     // Cached Token not present, invoke the user provided callback function to fetch function
@@ -2357,6 +2364,14 @@ MIT License
                         // token renew failed and don't have a token.
                         self._saveItem(Constants.storage.accessTokenKey, "");
                         throw new Error(Constants.errors.tokenExpired);
+                    }
+                    else {
+                        //Add a timeout to renew the cached token. 
+                        // Try to get the timeout first as this will guarantee the token is correctly formatted.
+                        var timeout = expiresIn - Constants.tokenRefreshClockSkew;
+                        Timers.clearTimeout(self.tokenTimeOutHandle); // Clear the previous refresh timeout in case it hadn't triggered yet.
+                        //@ts-ignore
+                        self.tokenTimeOutHandle = Timers.setTimeout(self._triggerTokenFetch, timeout);
                     }
                 }
                 return token;
@@ -2493,6 +2508,10 @@ MIT License
                 case AuthenticationType.anonymous:
                     headers[h.X_MS_CLIENT_ID] = opt.clientId;
                     headers[h.AUTHORIZATION] = h.AUTHORIZATION_SCHEME + " " + token;
+                    break;
+                case AuthenticationType.sas:
+                    headers[h.X_MS_CLIENT_ID] = opt.clientId;
+                    headers[h.AUTHORIZATION] = h.AUTHORIZATION_SCHEME_SAS + " " + token;
                     break;
                 case AuthenticationType.subscriptionKey:
                     if ("url" in request) {
