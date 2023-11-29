@@ -262,9 +262,11 @@ export class AuthenticationManager {
                     // trigger a new token fetch, but still return the current token
                     self._triggerTokenFetch();
                 } else if (expiresIn <= 0) {
-                    // token renew failed and don't have a token.
-                    self._saveItem(Constants.storage.accessTokenKey, "");
-                    throw new Error(Constants.errors.tokenExpired);
+                    // Token renew failed and don't have a token.
+                    // Try fetching a new token.
+                    self._triggerTokenFetch();
+                   // self._saveItem(Constants.storage.accessTokenKey, "");
+                  //  throw new Error(Constants.errors.tokenExpired);
                 } else {
                     //Add a timeout to renew the cached token. 
                     // Try to get the timeout first as this will guarantee the token is correctly formatted.
