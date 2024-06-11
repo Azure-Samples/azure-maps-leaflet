@@ -2,9 +2,9 @@ type WorkerHandler = {callback: () => void, worker: Worker};
 
 const SetTimeoutWorkerCode = `onmessage = function (event) {
     var delay = event.data.time; // milliseconds
-    var before = Date.now();
-    while (Date.now() < before + delay) { };
-    postMessage({id: event.data.id});
+    setTimeout(() => {
+        postMessage({id: event.data.id});
+    }, delay);
 };`;
 
 /** A class that provides a setTimeout function that will work in inactive browser tabs, or during mobile lock screens. */

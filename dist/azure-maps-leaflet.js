@@ -1,5 +1,5 @@
 /*
-azure-maps-leaflet Version: 0.0.3
+azure-maps-leaflet Version: 0.0.4
 
 MIT License
 
@@ -2077,7 +2077,7 @@ MIT License
         return Helpers;
     }());
 
-    var SetTimeoutWorkerCode = "onmessage = function (event) {\n    var delay = event.data.time; // milliseconds\n    var before = Date.now();\n    while (Date.now() < before + delay) { };\n    postMessage({id: event.data.id});\n};";
+    var SetTimeoutWorkerCode = "onmessage = function (event) {\n    var delay = event.data.time; // milliseconds\n    setTimeout(() => {\n        postMessage({id: event.data.id});\n    }, delay);\n};";
     /** A class that provides a setTimeout function that will work in inactive browser tabs, or during mobile lock screens. */
     var Timers = /** @class */ (function () {
         function Timers() {
