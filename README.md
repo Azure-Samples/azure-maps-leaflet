@@ -45,14 +45,14 @@ Currently supports raster (i.e PNG) tiles, support for vector tiles is planned.
 
 **Samples**
 
-[Render Azure Maps in Leaflet](https://azuremapscodesamples.azurewebsites.net/index.html?sample=Render%20Azure%20Maps%20in%20Leaflet)
-<br/>[<img src="https://samples.azuremaps.com/third-party-map-controls/render-azure-maps-in-leaflet/screenshot.jpg" height="200px">](https://azuremapscodesamples.azurewebsites.net/index.html?sample=Render%20Azure%20Maps%20in%20Leaflet)
+[Render Azure Maps in Leaflet](https://samples.azuremaps.com/?sample=render-azure-maps-in-leaflet)
+<br/>[<img src="https://samples.azuremaps.com/third-party-map-controls/render-azure-maps-in-leaflet/screenshot.jpg" height="200px">](https://samples.azuremaps.com/?sample=render-azure-maps-in-leaflet)
 
-[Show Azure Maps in Leaflet layer control](https://azuremapscodesamples.azurewebsites.net/index.html?sample=Show%20Azure%20Maps%20in%20Leaflet%20layer%20control)
-<br/>[<img src="https://samples.azuremaps.com/third-party-map-controls/show-azure-maps-in-leaflet-layer-control/screenshot.jpg" height="200px">](https://azuremapscodesamples.azurewebsites.net/index.html?sample=Show%20Azure%20Maps%20in%20Leaflet%20layer%20control)
+[Show Azure Maps in Leaflet layer control](https://samples.azuremaps.com/?sample=show-azure-maps-in-leaflet-layer-control)
+<br/>[<img src="https://samples.azuremaps.com/third-party-map-controls/show-azure-maps-in-leaflet-layer-control/screenshot.jpg" height="200px">](https://samples.azuremaps.com/?sample=show-azure-maps-in-leaflet-layer-control)
 
-[Azure Maps Leaflet options](https://azuremapscodesamples.azurewebsites.net/index.html?sample=Azure%20Maps%20Leaflet%20options)
-<br/>[<img src="https://samples.azuremaps.com/third-party-map-controls/azure-maps-leaflet-options/screenshot.jpg" height="200px">](https://azuremapscodesamples.azurewebsites.net/index.html?sample=Azure%20Maps%20Leaflet%20options)
+[Azure Maps Leaflet options](https://samples.azuremaps.com/?sample=azure-maps-leaflet-options)
+<br/>[<img src="https://samples.azuremaps.com/third-party-map-controls/azure-maps-leaflet-options/screenshot.jpg" height="200px">](https://samples.azuremaps.com/?sample=azure-maps-leaflet-options)
 
 ## Getting started
 
